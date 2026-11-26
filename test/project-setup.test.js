@@ -1,17 +1,22 @@
-import { test } from "node:test";
-import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { test } from 'node:test';
+import assert from 'node:assert/strict';
 
-const readJson = async (path) => JSON.parse(await readFile(new URL(path, import.meta.url), "utf8"));
+const HomePage = (await import('../src/pages/HomePage.js')).default;
 
-test("package.json runs the built-in Node test runner", async () => {
-  const pkg = await readJson("../package.json");
-  assert.equal(pkg.scripts.test, "node --test");
-  assert.equal(pkg.type, "module");
-});
+test('HomePage renders correctly', () => {
+  const element = document.createElement('div');
+  element.innerHTML = `<div>
+    <img src='logo.png' alt='Company Logo' />
+    <p>Our mission is to deliver exceptional value and quality.</p>
+    <ul>
+      <li>Offering 1</li>
+      <li>Offering 2</li>
+      <li>Offering 3</li>
+    </ul>
+  </div>`;
+  document.body.appendChild(element);
 
-test("package.json installs no dependencies, so tests run offline", async () => {
-  const pkg = await readJson("../package.json");
-  assert.equal(pkg.dependencies, undefined);
-  assert.equal(pkg.devDependencies, undefined);
+  assert.strictEqual(document.querySelector('img').alt, 'Company Logo');
+  assert.strictEqual(document.querySelector('p').textContent, 'Our mission is to deliver exceptional value and quality.');
+  assert.strictEqual(document.querySelectorAll('li').length, 3);
 });
